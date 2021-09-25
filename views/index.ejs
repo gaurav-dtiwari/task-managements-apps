@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">PM TOOLS MANAGEMENT</h1>
+        <form action="" id="pmToolManage">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="">PMT ID</label>
+                    <div class="col-md-12">
+                        <input type="hidden" name="editId" id="editId"/>
+                        <input type="number" class="form-control" name="pmtId" id="pmtId" required="true"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="">PEOJECRT NAME</label>
+                    <div class="col-md-12">
+                        <input type="text" name="prjName" class="form-control" id="prjName" required="true">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="">TASK</label>
+                    <div class="col-md-12">
+                        <textarea class="form-control" name="task" id="task" cols="30" rows="3" required="true"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label for="">PHP</label>
+                    <div class="col-md-12 copy">
+                        <input type="text" name="phpFile[]" id=""  class="form-control">
+                    </div>
+                    <a href="javascript:void(0)" class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
+                </div>
+                <div class="col-md-4">
+                    <label for="">CSS</label>
+                    <div class="col-md-12 copy">
+                        <input type="text" name="cssFile[]" id=""  class="form-control">
+                    </div>
+                    <a href="javascript:void(0)"  class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
+                </div>
+                <div class="col-md-4">
+                    <label for="">JS</label>
+                    <div class="col-md-12 copy">
+                        <input type="text" name="jsFile[]" id=""  class="form-control">
+                    </div>
+                    <a href="javascript:void(0)"  class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label for="">Stage</label>
+                    <input type="text" name="satge" id="satge" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="">Status</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="0">Pending</option>
+                        <option value="1">Done</option>
+                    </select>
+                </div> 
+            </div>
+            <div class="m-5 text-center">
+                <a href="" class="btn btn-primary" id="saveForm">Submit</a>
+                <a href="" class="btn btn-danger">Reset</a>
+            </div>
+        </form>
+        <h2 class="text-center">Task Details</h2>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <th>COUNT</th>
+                        <th>PMT ID</th>
+                        <th>PROJECT NAME</th>
+                        <th>DESCRIPTION</th>
+                        <th>FILES USED</th>
+                        <th>ACTIONS</th>
+                    </thead>
+                    <tbody>
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $(document).on('click','#saveForm',function(e){  
+                let pmtId=$('#pmtId').val();
+                let project=$('#prjName').val();
+                let details=$('#task').val();
+                let php=$("input[name='phpFile[]']").map(function(){return $(this).val();}).get();
+                let js=$("input[name='jsFile[]']").map(function(){return $(this).val();}).get();
+                let css=$("input[name='cssFile[]']").map(function(){return $(this).val();}).get();
+                let status=$('#status').val();
+                let satge=($('#satge').val()).split(',');
+                let editId=$('#editId').val();  
+                e.preventDefault(); 
+                let data_json={
+                    pmtId: pmtId,
+                    project: project,
+                    details: details,
+                    files:JSON.stringify({'php':php,'js':js,'css':css}),
+                    status:status,
+                    satge:JSON.stringify(satge),
+                    username:'GAURAV TIWARI',
+                    editId:''
+                };
+				$.ajax({
+					type: 'POST',
+					url: '/assignTask',
+					data: data_json,
+					dataType: "json",
+					success: (response) => {
+                        console.log(response);
+         					if (response.Success=="Success!") { 
+                                alert(response.message);
+         					}else if(response.err.code==11000){
+                                alert('Duplicate PMT ID Not Allowed');
+                            }
+         				},
+         				error: () => {
+         				}
+         			});
+            });
+            $(document).on('click','#resetForm',function(){
+                alert('OKK')
+            });
+            $(document).on('click','#editRec',function(){
+                alert('OKK')
+            });
+            $(document).on('click','#delRec',function(){
+                alert('OKK')
+            });
+            $(document).on('click','.addMore',function(){
+                var html=$(this).parent('div').find('.copy').html();
+                $('<div class="col-md-12 mt-2">'+html+'</div>').insertBefore($(this));
+            });
+            function ajaxListing(){
+
+            }
+        })
+    </script>
+</body>
+</html>
