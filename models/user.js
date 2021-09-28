@@ -9,6 +9,7 @@ userSchema = new Schema( {
 	status:String,
 	satge:String,
 	username:String,
+	query:String,
 	date:{
 		type: Date,
 		default: Date.now
