@@ -20,17 +20,19 @@ const userController={
     },
     assignTask(req,res,next){
         console.log(req.body);
+        var dataIns={
+            pmtId: req.body.pmtId,
+            project: req.body.project,
+            details: req.body.details,
+            files:req.body.files,
+            status:req.body.status,
+            query:req.body.querys,
+            satge:req.body.satge,
+            commit:req.body.commit,
+            username:req.body.username
+    };
         if(req.body.editId==''){
-            User.create({
-                pmtId: req.body.pmtId,
-                project: req.body.project,
-                details: req.body.details,
-                files:req.body.files,
-                status:req.body.status,
-                query:req.body.querys,
-                satge:req.body.satge,
-                username:req.body.username
-        },(err,result)=>{
+            User.create(dataIns,(err,result)=>{
             console.log(result);
                 if(!err){
                     res.send({'status':'200','Success':'Success!','message':'Inserted Sucessfully'});
@@ -39,7 +41,7 @@ const userController={
                 }
             })
         }else{
-            User.updateOne({'_id':req.body.editId},{'task':req.body.task,'assignedTo':req.body.assignedTo,'assignedBy':req.body.assignedBy,'status':'1'},(err,result)=>{
+            User.updateOne({'_id':req.body.editId},dataIns,(err,result)=>{
                 if(!err){
                     res.send({'status':'200','Success':'Success!','message':'Updated Sucessfully'});
                 }else{
