@@ -6,36 +6,20 @@ const userController={
                     return res.render('index.ejs');
         }  
     },
-    // dataList(req,res,next){
-    //     console.log(req.body);
-    //     var cond={};
-    //     var sortby={'_id':-1}
-    //     if(req.body.user_id !=''){
-    //         cond={'assignedBy':req.body.user_id}
-    //     }
-    //     if(req.body.sortedBy !=''){
-    //         sortby={'_id':req.body.sortedBy}
-    //     }
-    //     var limit=parseInt(req.body.length);
-    //     var skips=parseInt(req.body.start);
-    //     // console.log(User.find(cond).sort(sortby).limit(req.body.limit));
-    //     User.find(cond).sort(sortby).skip(skips).limit(limit).exec((err, data) => {
-    //         if(!err){
-    //             let result=[];
-    //             var counts=1;
-    //             data.forEach(function(element, index) { 
-    //                 result.push({'counts':counts,'task':element.task,'assignedTo':element.assignedTo,'assignedBy':element.assignedBy,action:'<a href="javascript:void(0)"  user_id="'+element._id+'" class="p-2 edit"><i class="fas fa-edit"></i></a><a href="javascript:void(0)" user_id="'+element._id+'"  class="p-2 delete"><i class="fas fa-trash-alt"></i></a>'});
-    //                 counts++;
-    //             })
-    //             User.countDocuments(cond, function(err, totalCount) {
-    //                 res.send({'status':'200','response':result,'recordsFiltered':totalCount,'recordsTotal':(counts*1)-1,'draw':req.body.draw});
-    //            });
-    //         }else{
-    //             res.send({'status':'404','response':err});
-    //         }
-    //     });
-    // },
+    dataList(req,res,next){
+        console.log(req.body);
+        var cond={}; 
+        // User.find(cond).sort(sortby).skip(skips).limit(limit).exec((err, data) => {
+        User.find(cond).exec((err, data) => {
+             if(!err){ 
+                    res.send({'status':'200','response':data});
+             }else{
+                res.send({'status':'404','response':err});
+            }
+        });
+    },
     assignTask(req,res,next){
+        console.log(req.body);
         if(req.body.editId==''){
             User.create({
                 pmtId: req.body.pmtId,
@@ -43,6 +27,7 @@ const userController={
                 details: req.body.details,
                 files:req.body.files,
                 status:req.body.status,
+                query:req.body.querys,
                 satge:req.body.satge,
                 username:req.body.username
         },(err,result)=>{
@@ -63,14 +48,24 @@ const userController={
             });
         }
     },
-    // deleteTask(req,res,next){
-    //     User.remove({_id:req.body.id},(err,resu)=>{
-    //         if(!err){
-    //             res.send({'status':'200','Success':'Success!'});
-    //         }else{
-    //             res.send({'status':'404','Success':'Faild!'});
-    //         }
-    //     })
-    // },
+    deleteTask(req,res,next){
+        User.remove({_id:req.body.username},(err,resu)=>{
+            if(!err){
+                res.send({'status':'200','Success':'Success!'});
+            }else{
+                res.send({'status':'404','Success':'Faild!'});
+            }
+        })
+    },
+    editTask(req,res,next){
+        let cond={'_id':req.body.username};
+        User.findOne(cond).exec((err, data) => {
+            if(!err){ 
+                   res.send({'status':'200','response':data});
+            }else{
+               res.send({'status':'404','response':err});
+           }
+       });
+    },
 }
 module.exports = userController;
