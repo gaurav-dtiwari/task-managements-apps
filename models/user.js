@@ -10,6 +10,7 @@ userSchema = new Schema( {
 	satge:String,
 	username:String,
 	query:String,
+	commit:String,
 	date:{
 		type: Date,
 		default: Date.now

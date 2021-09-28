@@ -8,10 +8,20 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 var port=process.env.PORT || 3001;
 const MongoDBURI = process.env.MONGO_URI || 'mongodb://localhost/pm_tools';
-mongoose.connect(MongoDBURI,{
+// mongoose.connect(MongoDBURI,{
+//   useUnifiedTopology:true,
+//   useNewUrlParser:true
+// });
+const TOOLDB="mongodb+srv://GTech:gaurav123@cluster0.lgg1q.mongodb.net/pm_tool_db?retryWrites=true&w=majority";
+mongoose.connect(TOOLDB,{
   useUnifiedTopology:true,
-  useNewUrlParser:true
-});
+  useNewUrlParser:true,
+  useCreateIndex:true,
+  useFindAndModify:false
+}).then(()=>{
+  console.log('Database Connected Successful');
+}).catch((err)=>  {console.log('Database Connected Successful');
+})
 const db=mongoose.connection;
 db.on('error',console.error.bind(console,'connection error:'));
 db.once('open',()=>{

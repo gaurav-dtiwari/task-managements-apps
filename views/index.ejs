@@ -13,7 +13,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.js"></script>
+    <style>
+        .bootstrap-tagsinput{
+            width:100%;
+        }
+        .bootstrap-tagsinput .tag{
+            background: blue;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -44,35 +53,36 @@
                 <div class="col-md-4 php">
                     <label for="">PHP</label>
                     <div class="col-md-12 copy">
-                        <input type="text" name="phpFile[]" id=""  class="form-control">
+                        <input type="text" name="phpFile" id="phpFile"  class="form-control"  data-role="tagsinput" />
                     </div>
-                    <a href="javascript:void(0)" class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
                 </div>
                 <div class="col-md-4 css">
                     <label for="">CSS</label>
                     <div class="col-md-12 copy">
-                        <input type="text" name="cssFile[]" id=""  class="form-control">
+                        <input type="text" name="cssFile" id="cssFile"  class="form-control"  data-role="tagsinput" />
                     </div>
-                    <a href="javascript:void(0)"  class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
                 </div>
                 <div class="col-md-4 js">
                     <label for="">JS</label>
                     <div class="col-md-12 copy">
-                        <input type="text" name="jsFile[]" id=""  class="form-control">
+                        <input type="text" name="jsFile" id="jsFile"  class="form-control" data-role="tagsinput"/>
                     </div>
-                    <a href="javascript:void(0)"  class="addMore"> <i class="fas fa-plus-circle"></i> Add More</a>
                 </div>
             </div>
             <div class="row mt-3">
                 <div class="col-md-4">
                     <label for="">Query</label>
-                    <input type="text" name="query" id="query" class="form-control">
+                    <textarea type="text" name="query" id="query" class="form-control"></textarea>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="">Stage</label>
                     <input type="text" name="satge" id="satge" class="form-control">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label for="">Commit Id</label>
+                    <input type="text" name="commit" id="commit" class="form-control">
+                </div>
+                <div class="col-md-2">
                     <label for="">Status</label>
                     <select name="status" id="status" class="form-control">
                         <option value="0">Pending</option>
@@ -98,6 +108,7 @@
                         <th>STAGE</th>
                         <th>STATUS</th>
                         <th>Query</th>
+                        <th>COMMIT</th>
                         <th>ACTIONS</th>
                     </thead>
                     <tbody>
@@ -113,13 +124,14 @@
                 let pmtId=$('#pmtId').val();
                 let project=$('#prjName').val();
                 let details=$('#task').val();
-                let php=$("input[name='phpFile[]']").map(function(){return $(this).val();}).get();
-                let js=$("input[name='jsFile[]']").map(function(){return $(this).val();}).get();
-                let css=$("input[name='cssFile[]']").map(function(){return $(this).val();}).get();
+                let php=($("#phpFile").val()).split(',');
+                let js=($("#jsFile").val()).split(',');
+                let css=($("#cssFile").val()).split(',');
                 let status=$('#status').val();
                 let satge=($('#satge').val()).split(',');
                 let editId=$('#editId').val();  
                 let querys=$('#query').val();
+                let commit=$('#commit').val();
                 e.preventDefault(); 
                 let data_json={
                     pmtId: pmtId,
@@ -128,6 +140,7 @@
                     files:JSON.stringify({'php':php,'js':js,'css':css}),
                     querys:querys,
                     status:status,
+                    commit:commit,
                     satge:JSON.stringify(satge),
                     username:'GAURAV TIWARI',
                     editId:editId
@@ -163,18 +176,24 @@
 					dataType: "json",
 					success: (response) => {
                             console.log(response);
+                            $('#phpFile').tagsinput('removeAll');
+                            $('#cssFile').tagsinput('removeAll');
+                            $('#jsFile').tagsinput('removeAll');
                             response=response.response;
                             $('#editId').val(response._id);
                             $('#pmtId').val(response.pmtId);
                             $('#prjName').val(response.project);
                             $('#task').val(response.details);
                             $('#query').val(response.query);
+                            $('#commit').val(response.commit);
                             $('#satge').val(JSON.parse(response.satge));
                             $('#status').val(response.status);
-                            let php=JSON.parse(response.files)['php'];
-                            let css=JSON.parse(response.files)['css'];
-                            let js = JSON.parse(response.files)['js'];
-
+                            let php=(JSON.parse(response.files)['php']).toString();
+                            let css=(JSON.parse(response.files)['css']).toString();
+                            let js = (JSON.parse(response.files)['js']).toString();
+                            $('#phpFile').tagsinput('add', php);
+                            $('#jsFile').tagsinput('add', js);
+                            $('#cssFile').tagsinput('add', css);
          				},
          				error: () => {
          				}
@@ -226,6 +245,7 @@
                                         <td>${JSON.parse(value.satge)}</td>
                                         <td>${value.status==0?'Pending':'Completed'}</td>
                                         <td>${value.query}</td>
+                                        <td>${value.commit}</td>
                                         <td><a id="editRec" href="javascript:void(0)"  edit-id="${value._id}"><i class="fas fa-edit"></i></a><a id="delRec" href="javascript:void(0)"  delete-id="${value._id}"><i class="fas fa-trash"></i></a></td>
                                     </tr>`;
                             });
