@@ -11,7 +11,7 @@ const userController={
                     return res.render('login.ejs');
         }  
     },
-    login(req,res,next){
+    signup(req,res,next){
         {
                     return res.render('signup.ejs');
         }  
