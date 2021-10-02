@@ -6,6 +6,16 @@ const userController={
                     return res.render('index.ejs');
         }  
     },
+    login(req,res,next){
+        {
+                    return res.render('login.ejs');
+        }  
+    },
+    login(req,res,next){
+        {
+                    return res.render('signup.ejs');
+        }  
+    },
     dataList(req,res,next){
         console.log(req.body);
         var cond={}; 
